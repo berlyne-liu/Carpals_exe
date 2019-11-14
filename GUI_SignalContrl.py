@@ -94,16 +94,21 @@ class Ui_signalContrl(Ui_alarm):
             self.file_path5 = openfile_name[0]
 
     def InitListview(self):
-        self.slm.setStringList([])
+        _List = []
+        self.slm.setStringList(_List)
         self.listView_a1.setModel(self.slm)
 
     def FuncListviewadditem(self, dictItem):
         _dicItem = dictItem
-        for key, val in _dicItem.items():
-            _strList = "将文件：" + str(key.split("/")[-1]) + "导入数据库：" + str(val)
-            self.add_list.append(_strList)
-            self.slm.setStringList(self.add_list)
-            self.listView_a1.setModel(self.slm)
+        if _dicItem:
+            self.add_list = []
+            for key, val in _dicItem.items():
+                _strList = "将文件：" + str(key.split("/")[-1]) + "导入数据库：" + str(val)
+                self.add_list.append(_strList)
+                self.slm.setStringList(self.add_list)
+                self.listView_a1.setModel(self.slm)
+        else:
+            self.InitListview()
 
     def ConnectListviewaddItem(self):
         add_path = self.lineEdit_a1.text()
@@ -135,8 +140,14 @@ class Ui_signalContrl(Ui_alarm):
         else:
             self.listView_a1.clearSelection()
 
-    def QMessageBoxShow(self, title, message):
-        QMessageBox.warning(self, title, message, QMessageBox.Yes | QMessageBox.No)
+    def QMessageBoxShow(self, title, message, p_int):
+        if p_int == 0:  # mode 0:Question Type, No return value, Just Confirm whether the user operates correctly.
+            QMessageBox.question(self, title, message, QMessageBox.Yes)
+        elif p_int == 1:  # mode 1:Infomation Type, No return value, Just print the any string.
+            QMessageBox.information(self, title, message, QMessageBox.Yes)
+        elif p_int == 2:  # mode 2: Warning Type, return value, warning that the operate may be dangerous
+            _choose = QMessageBox.warning(self, title, message, QMessageBox.Yes | QMessageBox.No)
+            return _choose
 
     def Alarm_Generated(self):
         Ae = Alarm_Extraction()
@@ -224,13 +235,17 @@ class Ui_signalContrl(Ui_alarm):
         self.child.show()
 
     def listview_delete(self, point):
-        column = self.listView_a1.indexAt(point).column()
-        self.QMessageBoxShow("警告", "将删除第%s行，删除后无法复原，请谨慎操作！！" % (column+1))
-        #     add_path =
-        # add_str = "将文件：" + str(add_path.split("/")[-1]) + "导入数据库：" + str(add_table)
-        # self.add_list.append(add_str)
-        # self.slm.setStringList(self.add_list)
-        # self.listView_a1.setModel(self.slm)
+        _Currenrow = self.listView_a1.currentIndex().row()
+        for r, k in enumerate(list(self.dic_add)):
+            if r == _Currenrow:
+                _value = self.QMessageBoxShow("信息删除告警!!", "是否取消将路径%s导入%s" % (k, self.dic_add[k]), 2)
+                print(_value)
+                if _value == 16384:
+                    del self.dic_add[k]
+                    # print(self.dic_add)
+                else:
+                    break
+        self.FuncListviewadditem(self.dic_add)
 
 
 
