@@ -5,8 +5,8 @@
 # Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
-from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QMainWindow, QListView, QMenu
+
+from PyQt5.QtWidgets import QMainWindow, QListView
 from GUI_Carpals_test import *
 
 

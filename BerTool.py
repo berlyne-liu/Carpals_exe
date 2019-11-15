@@ -14,6 +14,7 @@ if __name__ == '__main__':
     try:
         ui.setupUi(mainWindow)
         ui.alarm_setupUi()
+        ui.AlarmSetup_setupUi()
         ui.QtWidget_Funtion()
         mainWindow.show()
         sys.exit(app.exec_())
