@@ -10,13 +10,13 @@ from PyQt5.QtWidgets import QMainWindow
 from GUI_Carpals_test import *
 
 
-class Ui_AlarmSetup(QMainWindow, Ui_MainWindow):
+class Ui_AlarmConfig(QMainWindow, Ui_MainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
 
-    def AlarmSetup_setupUi(self):
+    def AlarmConfig_setupUi(self):
         self.frame_as1 = QtWidgets.QFrame(self.centralwidget)
         self.groupbox_as1 = QtWidgets.QGroupBox(self.frame_as1)
         self.pushbutton_as1 = QtWidgets.QPushButton(self.groupbox_as1)
@@ -33,10 +33,10 @@ class Ui_AlarmSetup(QMainWindow, Ui_MainWindow):
         self.pushbutton_as1.setGeometry(QtCore.QRect(230, 40, 90, 40))
         self.pushbutton_as2.setGeometry(QtCore.QRect(330, 40, 90, 40))
         self.pushbutton_as3.setGeometry(QtCore.QRect(430, 40, 90, 40))
-        self.RadioButton_as1.setGeometry(QtCore.QRect(20, 30, 90, 20))
-        self.RadioButton_as2.setGeometry(QtCore.QRect(130, 30, 90, 20))
-        self.RadioButton_as3.setGeometry(QtCore.QRect(20, 70, 90, 20))
-        self.RadioButton_as4.setGeometry(QtCore.QRect(130, 70, 90, 20))
+        self.RadioButton_as1.setGeometry(QtCore.QRect(20, 30, 110, 20))
+        self.RadioButton_as2.setGeometry(QtCore.QRect(130, 30, 100, 20))
+        self.RadioButton_as3.setGeometry(QtCore.QRect(20, 70, 110, 20))
+        self.RadioButton_as4.setGeometry(QtCore.QRect(130, 70, 100, 20))
         self.Tableview_as1.setGeometry(QtCore.QRect(10, 120, 980, 420))
 
         self.frame_as1.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -48,9 +48,6 @@ class Ui_AlarmSetup(QMainWindow, Ui_MainWindow):
         self.frame_as1.setFrameShadow(QtWidgets.QFrame.Raised)
         self.RadioButton_as4.setEnabled(False)
 
-        self.AlarmSetup_retranslateUi()
-
-    def AlarmSetup_retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.pushbutton_as1.setText(_translate("MainWindow", "导入"))
         self.pushbutton_as2.setText(_translate("MainWindow", "呈现"))

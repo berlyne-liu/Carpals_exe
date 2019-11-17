@@ -80,14 +80,14 @@ class Ui_MainWindow(object):
         self.action_5.setText(_translate("MainWindow", "LTE告警解析"))
         self.action_6.setText(_translate("MainWindow", "告警配置"))
 
-    def Dialog_setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 300)
-        Dialog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        Dialog.setWindowIcon(self.icon_1)
+    def Dialog_setupUi(self, QDialog):
+        self.Dialog = QtWidgets.QWidget(QDialog)
+        QDialog.resize(400, 300)
+        QDialog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
+        QtCore.QMetaObject.connectSlotsByName(QDialog)
+        # _translate = QtCore.QCoreApplication.translate
+        # QDialog.setWindowTitle(_translate("QDialog", "QDialog"))
+        # QDialog.setWindowIcon(self.icon_1)
 
 
 

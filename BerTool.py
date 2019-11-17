@@ -14,9 +14,9 @@ if __name__ == '__main__':
     try:
         ui.setupUi(mainWindow)
         ui.alarm_setupUi()
-        ui.AlarmSetup_setupUi()
+        ui.AlarmConfig_setupUi()
         ui.QtWidget_Funtion()
         mainWindow.show()
         sys.exit(app.exec_())
     except Exception as e:
-        ui.QMessageBoxShow("主窗口错误", str(e))
+        ui.QMessageBoxShow("主窗口错误", str(e), 0)

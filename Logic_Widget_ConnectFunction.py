@@ -7,26 +7,21 @@ import os
 import sqlite3
 from xlwt import Workbook
 from GUI_Carpals_Alarm import *
+from GUI_Alarm_Config import *
 from GUI_Dialog import Ui_DialogFrame
-from GUI_Alarm_Config import Ui_AlarmSetup
 from Logic_Alarm_FileExtration import *
 from Logic_Sqlite_Modify import *
 
 
-class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
+class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig):
     def __init__(self):
         Ui_alarm.__init__(self)
-        Ui_AlarmSetup.__init__(self)
+        Ui_AlarmConfig.__init__(self)
         self.slm = QStringListModel()
         self.alarm_setupUi()
-        self.AlarmSetup_setupUi()
+        self.AlarmConfig_setupUi()
         self.connect = sqlite3.connect('./Carpals.db')
         self.sm = Sqlite_Modify(self.connect)
-        self.file_path1 = None
-        self.file_path2 = None
-        self.file_path3 = None
-        self.file_path4 = None
-        self.file_path5 = None
         # self.Path4 = "./Script/check_01.sql"
         self.add_list = []
         self.dic_AlarmFile = {}
@@ -56,7 +51,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
             self.frame_as1.setHidden(False)
             self.frame_a.setHidden(True)
 
-    def openfile(self, n):
+    def openfile(self, widget):
         """
         openfile 是tool button点击后的实例方法
         功能：点击tool button后打开文件目录
@@ -64,25 +59,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
         """
         openfile_name = QFileDialog.getOpenFileName(self.centralwidget, '选择文件', '')
         file_name = openfile_name[0].split("/")[-1]
-        # print('linetext_{0}被输入数据：'.format(n) + openfile_name[0])
-        # print('文件名为：' + file_name)
-        if n == 1:
-            # print(self.lineEdit_1.text())
-            self.lineEdit_1.setText(openfile_name[0])
-            self.file_path1 = openfile_name[0]
-            # print(self.file_path1)
-        elif n == 2:
-            self.lineEdit_2.setText(openfile_name[0])
-            self.file_path2 = openfile_name[0]
-        elif n == 3:
-            self.lineEdit_3.setText(openfile_name[0])
-            self.file_path3 = openfile_name[0]
-        elif n == 4:
-            self.lineEdit_4.setText(openfile_name[0])
-            self.file_path4 = openfile_name[0]
-        elif n == 5:
-            self.lineEdit_a1.setText(openfile_name[0])
-            self.file_path5 = openfile_name[0]
+        widget.setText(openfile_name[0])
 
     def InitListview(self):
         _List = []
@@ -110,10 +87,10 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
                 self.dic_AlarmFile[add_path] = add_table
                 self.FuncListviewadditem(self.dic_AlarmFile)
             else:
-                self.QMessageBoxShow("文件错误提示框", "您输入的文件路径不符合规则，请输入.txt/.xlsx/无扩展名的文件")
+                self.QMessageBoxShow("文件错误提示框", "您输入的文件路径不符合规则，请输入.txt/.xlsx/无扩展名的文件", 1)
                 return
         else:
-            self.QMessageBoxShow("错误提示框", "文件路径和导入数据表不能为空！")
+            self.QMessageBoxShow("错误提示框", "文件路径和导入数据表不能为空！", 1)
             return
 
     def listview_init(self):
@@ -124,7 +101,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
         popMenu = QMenu()
         pos = self.listView_a1.indexAt(point).column()  # 返回鼠标点击的位置的数据行，-1表示空白行
         if pos > -1:
-            popMenu.addAction("修改", lambda: self.Dialog_exec())
+            popMenu.addAction("修改", lambda: self.Dialog_exec(0))
             popMenu.addAction("删除", lambda: self.listview_delete(point))
             # print(QCursor.pos())
             popMenu.exec_(QCursor.pos())
@@ -151,7 +128,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
             elif filetype.find(".") == -1:
                 hea, cont, err = Ae.textExtraction(path)
             else:
-                self.QMessageBoxShow("文件错误提示框", "您输入的文件路径不符合规则，请输入.txt/.xlsx/无扩展名的文件")
+                self.QMessageBoxShow("文件错误提示框", "您输入的文件路径不符合规则，请输入.txt/.xlsx/无扩展名的文件", 1)
                 return
             self.sm.sqlite_insert(hea, cont, table=table)
         self.Ontime_Query()
@@ -219,13 +196,16 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmSetup):
                 sheet.write(rowy + 1, colx, text)
         book.save("./Result/告警表.xls")
 
-    def Dialog_exec(self):
+    def Dialog_exec(self, p_int):
         self.child = QDialog()
         child_ui = Ui_DialogFrame()
-        child_ui.DialogFrame_setupUi(self.child)
+        if p_int == 0:
+            child_ui.DialogAlarmUpdate_setupUi(self.child)
+        elif p_int == 1:
+            child_ui.DialogAlarmConfig_setupUi(self.child)
         self.child.show()
 
-    def listview_delete(self, point):
+    def listview_delete(self):
         _Currenrow = self.listView_a1.currentIndex().row()
         for r, k in enumerate(list(self.dic_AlarmFile)):
             if r == _Currenrow:
