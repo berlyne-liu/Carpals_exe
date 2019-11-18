@@ -5,8 +5,8 @@
 # Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
-
-from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog, QHeaderView, QAbstractItemView, QTableWidget
 from GUI_Carpals_test import *
 
 
@@ -49,7 +49,17 @@ class Ui_DialogFrame(QMainWindow, Ui_MainWindow):
         self.pushbutton_config1.setGeometry(QtCore.QRect(500, 340, 90, 40))
 
         Dialog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
+        Dialog.setWindowModality(Qt.ApplicationModal)
         QtCore.QMetaObject.connectSlotsByName(self.frame_config)
+
+        self.tablewidget_config1.setColumnCount(2)
+        self.tablewidget_config1.setHorizontalHeaderLabels(["标准列名", "导入列名"])
+        self.tablewidget_config1.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tablewidget_config1.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # 将行与列的高度设置为所显示的内容的宽度高度匹配
+        QTableWidget.resizeColumnsToContents(self.tablewidget_config1)
+        QTableWidget.resizeRowsToContents(self.tablewidget_config1)
+
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "导入数据"))
         Dialog.setWindowIcon(self.icon_1)
@@ -59,14 +69,8 @@ class Ui_DialogFrame(QMainWindow, Ui_MainWindow):
         self.toolButton_config1.setText(_translate("Dialog", "文件"))
         self.toolButton_config1.setIcon(self.icon)
 
-        self.toolButton_config1.released.connect(lambda: self.Dialogopenfile(self.lineEdit_config1))
 
-    def Dialogopenfile(self, widget):
-        """
-        openfile 是tool button点击后的实例方法
-        功能：点击tool button后打开文件目录
-        参数：n,用于将tool button与line Eidt对应起来
-        """
-        openfile_name = QFileDialog.getOpenFileName(Dialog, '选择文件', '')
-        file_name = openfile_name[0].split("/")[-1]
-        widget.setText(openfile_name[0])
+
+
+
+

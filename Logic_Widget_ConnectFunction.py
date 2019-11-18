@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QCursor
-from PyQt5.QtWidgets import QMessageBox, QTableView, QFileDialog, QHeaderView, QDialog, QMenu
+from PyQt5.QtWidgets import QMessageBox, QTableView, QFileDialog, QHeaderView, QDialog, QMenu, QTableWidgetItem
 from PyQt5.QtCore import QStringListModel
 import os
 import sqlite3
@@ -13,10 +13,11 @@ from Logic_Alarm_FileExtration import *
 from Logic_Sqlite_Modify import *
 
 
-class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig):
+class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
     def __init__(self):
         Ui_alarm.__init__(self)
         Ui_AlarmConfig.__init__(self)
+        Ui_DialogFrame.__init__(self)
         self.slm = QStringListModel()
         self.alarm_setupUi()
         self.AlarmConfig_setupUi()
@@ -51,15 +52,20 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig):
             self.frame_as1.setHidden(False)
             self.frame_a.setHidden(True)
 
-    def openfile(self, widget):
+    def openfile(self, widget, mode="Main"):
         """
         openfile 是tool button点击后的实例方法
         功能：点击tool button后打开文件目录
         参数：n,用于将tool button与line Eidt对应起来
         """
-        openfile_name = QFileDialog.getOpenFileName(self.centralwidget, '选择文件', '')
-        file_name = openfile_name[0].split("/")[-1]
-        widget.setText(openfile_name[0])
+        if mode == "Main":
+            openfile_name = QFileDialog.getOpenFileName(self.centralwidget, '选择文件', '')
+            file_name = openfile_name[0].split("/")[-1]
+            widget.setText(openfile_name[0])
+        elif mode == "Dialog":
+            openfile_name = QFileDialog.getOpenFileName(self.child, '选择文件', '')
+            file_name = openfile_name[0].split("/")[-1]
+            widget.setText(openfile_name[0])
 
     def InitListview(self):
         _List = []
@@ -124,7 +130,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig):
             if filetype.lower() == ".csv":
                 hea, cont, err = Ae.csvExtraction(path)
             elif filetype.lower() == ".xlsx":
-                hea, cont, err = Ae.excelExtraction(path)
+                hea, cont, err = Ae.excelExtraction(path, mode="data")
             elif filetype.find(".") == -1:
                 hea, cont, err = Ae.textExtraction(path)
             else:
@@ -203,6 +209,8 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig):
             child_ui.DialogAlarmUpdate_setupUi(self.child)
         elif p_int == 1:
             child_ui.DialogAlarmConfig_setupUi(self.child)
+            self.DialogTableWidget(child_ui)
+            child_ui.toolButton_config1.released.connect(lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1))
         self.child.show()
 
     def listview_delete(self):
@@ -217,4 +225,20 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig):
                     break
         self.FuncListviewadditem(self.dic_AlarmFile)
 
+    def DialogAlarmConfigClickedFunc(self, A_widget):
+        self.openfile(A_widget, mode="Dialog")
 
+    def DialogTableWidget(self, dl):
+        _id = self.buttonGroup_as1.checkedId()
+        dicAlaConfig = {1: ["告警标题", "告警解析", "备注1", "备注2", "备注3"],
+                        2: ["小区", "覆盖场景"],
+                        3: ["ERBS", "ERBS中文名", "区域", "CELL", "小区中文名", "ABC网格", "综合网格35", "责任田125"],
+                        4: []}
+        for k, v in dicAlaConfig.items():
+            if k == _id:
+                for row, value in enumerate(v):
+                    _len = len(v)
+                    dl.tablewidget_config1.setRowCount(_len)
+                    print(row, value)
+                    dl.tablewidget_config1.setItem(row, 0, QTableWidgetItem(value))
+                    print("r")

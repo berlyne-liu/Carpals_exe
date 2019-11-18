@@ -15,11 +15,11 @@ class Ui_signalContrl(Widget_ConnectFunction):
     def __init__(self):
         Widget_ConnectFunction.__init__(self)
 
-    def QtWidget_Funtion(self):
+    def QtWidget_Function(self):
         self.action_5.triggered.connect(lambda: self.frame_init(0))
         self.action_6.triggered.connect(lambda: self.frame_init(1))
         # toolbutton点击后（鼠标点击释放），打开文件目录
-        self.toolButton_a1.released.connect(lambda: self.openfile(self.lineEdit_a1))
+        self.toolButton_a1.released.connect(lambda: self.openfile(self.lineEdit_a1, mode="Main"))
         # Combobox 初始化：加入数据库的中的表名
         self.combobox_init(self.comboBox_a1, reg_name="Alarm")
         self.listView_a1.customContextMenuRequested[QPoint].connect(self.listWidgetContext)
@@ -28,3 +28,5 @@ class Ui_signalContrl(Widget_ConnectFunction):
         self.pushButton_a3.released.connect(self.ConnectListviewaddItem)
         self.pushButton_a4.released.connect(self.Alarm_removedata)
         self.pushbutton_as1.released.connect(lambda: self.Dialog_exec(1))
+        self.pushbutton_as2.released.connect(lambda: print(self.buttonGroup_as1.checkedId()))
+

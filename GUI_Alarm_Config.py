@@ -19,6 +19,7 @@ class Ui_AlarmConfig(QMainWindow, Ui_MainWindow):
     def AlarmConfig_setupUi(self):
         self.frame_as1 = QtWidgets.QFrame(self.centralwidget)
         self.groupbox_as1 = QtWidgets.QGroupBox(self.frame_as1)
+        self.buttonGroup_as1 = QtWidgets.QButtonGroup(self.frame_as1)
         self.pushbutton_as1 = QtWidgets.QPushButton(self.groupbox_as1)
         self.pushbutton_as2 = QtWidgets.QPushButton(self.groupbox_as1)
         self.pushbutton_as3 = QtWidgets.QPushButton(self.groupbox_as1)
@@ -27,6 +28,10 @@ class Ui_AlarmConfig(QMainWindow, Ui_MainWindow):
         self.RadioButton_as3 = QtWidgets.QRadioButton(self.groupbox_as1)
         self.RadioButton_as4 = QtWidgets.QRadioButton(self.groupbox_as1)
         self.Tableview_as1 = QtWidgets.QTableView(self.frame_as1)
+        self.buttonGroup_as1.addButton(self.RadioButton_as1, 1)
+        self.buttonGroup_as1.addButton(self.RadioButton_as2, 2)
+        self.buttonGroup_as1.addButton(self.RadioButton_as3, 3)
+        self.buttonGroup_as1.addButton(self.RadioButton_as4, 4)
 
         self.frame_as1.setGeometry(QtCore.QRect(0, 0, 1000, 600))
         self.groupbox_as1.setGeometry(QtCore.QRect(10, 5, 980, 100))
