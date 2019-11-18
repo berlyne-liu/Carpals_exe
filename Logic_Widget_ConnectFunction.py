@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QCursor
-from PyQt5.QtWidgets import QMessageBox, QTableView, QFileDialog, QHeaderView, QDialog, QMenu, QTableWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QTableView, QFileDialog, QHeaderView, QDialog, QMenu, QTableWidgetItem, \
+    QComboBox
 from PyQt5.QtCore import QStringListModel
 import os
 import sqlite3
@@ -23,6 +24,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         self.AlarmConfig_setupUi()
         self.connect = sqlite3.connect('./Carpals.db')
         self.sm = Sqlite_Modify(self.connect)
+        self.Ae = Alarm_Extraction()
         # self.Path4 = "./Script/check_01.sql"
         self.add_list = []
         self.dic_AlarmFile = {}
@@ -209,8 +211,10 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             child_ui.DialogAlarmUpdate_setupUi(self.child)
         elif p_int == 1:
             child_ui.DialogAlarmConfig_setupUi(self.child)
-            self.DialogTableWidget(child_ui)
-            child_ui.toolButton_config1.released.connect(lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1))
+            self.DialogTableWidgetAddItems(child_ui)
+            child_ui.toolButton_config1.released.connect(
+                lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1, child_ui))
+            child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
         self.child.show()
 
     def listview_delete(self):
@@ -225,11 +229,16 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                     break
         self.FuncListviewadditem(self.dic_AlarmFile)
 
-    def DialogAlarmConfigClickedFunc(self, A_widget):
+    def DialogAlarmConfigClickedFunc(self, A_widget, dl):
         self.openfile(A_widget, mode="Dialog")
+        _FilePath = A_widget.text()
+        _SheetName = self.Ae.excelExtraction(_FilePath, mode="sheet")
+        dl.combobox_config1.addItems(_SheetName)
 
-    def DialogTableWidget(self, dl):
+    def DialogTableWidgetAddItems(self, dl):
         _id = self.buttonGroup_as1.checkedId()
+        # comBox = QtWidgets.QComboBox()
+        # comBox.setStyleSheet('QComboBox{margin:3px}')
         dicAlaConfig = {1: ["告警标题", "告警解析", "备注1", "备注2", "备注3"],
                         2: ["小区", "覆盖场景"],
                         3: ["ERBS", "ERBS中文名", "区域", "CELL", "小区中文名", "ABC网格", "综合网格35", "责任田125"],
@@ -239,6 +248,16 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                 for row, value in enumerate(v):
                     _len = len(v)
                     dl.tablewidget_config1.setRowCount(_len)
-                    print(row, value)
                     dl.tablewidget_config1.setItem(row, 0, QTableWidgetItem(value))
-                    print("r")
+
+    def DialogTableWidgetAddCombobox(self, dl):
+        _rowCount = dl.tablewidget_config1.rowCount()
+        for n in range(_rowCount):
+            comBox = QComboBox(dl.tablewidget_config1)
+            comBox.setObjectName(u'combobox_' + str(n))
+            # print(dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(n)))
+            dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(n)).setStyleSheet('QComboBox{'
+                                                                                             'margin:3px}')
+            dl.tablewidget_config1.setCellWidget(n, 1,
+                                                 dl.tablewidget_config1.findChild(QComboBox, u'combobox_'
+                                                                                  + str(n)))
