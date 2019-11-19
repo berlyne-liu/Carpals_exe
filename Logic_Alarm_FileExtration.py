@@ -39,13 +39,13 @@ class Alarm_Extraction:
             c_header = None
         return c_header, container, error
 
-    def excelExtraction(self, excelpath, mode="data"):
+    def excelExtraction(self, excelpath, mode="data", _sheetName=None):
         container = []
         error = "存在以下异常：\n"
         excelFile = xlrd.open_workbook(excelpath)
         if mode == "data":
             try:
-                table = excelFile.sheet_by_name("标准告警码")
+                table = excelFile.sheet_by_name(_sheetName)
                 r = table.nrows
                 e_header = table.row_values(rowx=0, start_colx=0, end_colx=None)
                 for i in range(r):
@@ -58,3 +58,7 @@ class Alarm_Extraction:
         elif mode == "sheet":
             sheet_name = excelFile.sheet_names()
             return sheet_name
+        elif mode == "header":
+            table = excelFile.sheet_by_name(_sheetName)
+            e_header = table.row_values(rowx=0, start_colx=0, end_colx=None)
+            return e_header

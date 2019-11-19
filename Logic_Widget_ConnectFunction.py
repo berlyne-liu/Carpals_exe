@@ -126,15 +126,15 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             return _choose
 
     def Alarm_Generated(self):
-        Ae = Alarm_Extraction()
+        # Ae = Alarm_Extraction()
         for (path, table) in self.dic_AlarmFile.items():
             filetype = os.path.splitext(path)[-1]
             if filetype.lower() == ".csv":
-                hea, cont, err = Ae.csvExtraction(path)
+                hea, cont, err = self.Ae.csvExtraction(path)
             elif filetype.lower() == ".xlsx":
-                hea, cont, err = Ae.excelExtraction(path, mode="data")
+                hea, cont, err = self.Ae.excelExtraction(path, mode="data", _sheetName="标准告警码")
             elif filetype.find(".") == -1:
-                hea, cont, err = Ae.textExtraction(path)
+                hea, cont, err = self.Ae.textExtraction(path)
             else:
                 self.QMessageBoxShow("文件错误提示框", "您输入的文件路径不符合规则，请输入.txt/.xlsx/无扩展名的文件", 1)
                 return
@@ -214,7 +214,10 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             self.DialogTableWidgetAddItems(child_ui)
             child_ui.toolButton_config1.released.connect(
                 lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1, child_ui))
-            child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
+            # child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
+            child_ui.combobox_config1.currentIndexChanged.connect(
+                lambda: self.DialogOpenFileMatchTableWidgetItem(child_ui))
+            child_ui.tablewidget_config1.clicked.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
         self.child.show()
 
     def listview_delete(self):
@@ -232,8 +235,11 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
     def DialogAlarmConfigClickedFunc(self, A_widget, dl):
         self.openfile(A_widget, mode="Dialog")
         _FilePath = A_widget.text()
-        _SheetName = self.Ae.excelExtraction(_FilePath, mode="sheet")
-        dl.combobox_config1.addItems(_SheetName)
+        if _FilePath != "":
+            _SheetName = self.Ae.excelExtraction(_FilePath, mode="sheet")
+            dl.combobox_config1.addItems(_SheetName)
+        else:
+            return
 
     def DialogTableWidgetAddItems(self, dl):
         _id = self.buttonGroup_as1.checkedId()
@@ -251,13 +257,44 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                     dl.tablewidget_config1.setItem(row, 0, QTableWidgetItem(value))
 
     def DialogTableWidgetAddCombobox(self, dl):
-        _rowCount = dl.tablewidget_config1.rowCount()
-        for n in range(_rowCount):
-            comBox = QComboBox(dl.tablewidget_config1)
-            comBox.setObjectName(u'combobox_' + str(n))
-            # print(dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(n)))
-            dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(n)).setStyleSheet('QComboBox{'
-                                                                                             'margin:3px}')
-            dl.tablewidget_config1.setCellWidget(n, 1,
-                                                 dl.tablewidget_config1.findChild(QComboBox, u'combobox_'
-                                                                                  + str(n)))
+        _path = dl.lineEdit_config1.text()
+        if _path != "":
+            _currentSheet = dl.combobox_config1.currentText()
+            _head = self.Ae.excelExtraction(_path, mode="header", _sheetName=_currentSheet)
+            _rowCount = dl.tablewidget_config1.rowCount()
+            _selectRow = dl.tablewidget_config1.selectionModel().selection().indexes()
+            for n in range(_rowCount):
+                dl.tablewidget_config1.removeCellWidget(n, 1)
+            for i in _selectRow:
+                if i.column() == 1:
+                    comBox = QComboBox(dl.tablewidget_config1)
+                    comBox.setObjectName(u'combobox_' + str(i.row()))
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).\
+                        setStyleSheet('QComboBox{''margin:3px}')
+                    dl.tablewidget_config1.setCellWidget(i.row(), i.column(), dl.tablewidget_config1.
+                                                         findChild(QComboBox, u'combobox_' + str(i.row())))
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).clear()
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).addItems(_head)
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).\
+                        setCurrentText(dl.tablewidget_config1.
+                                       item(i.row(), i.column()).text())
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).currentIndexChanged.connect(
+                        lambda: dl.tablewidget_config1.setItem(i.row(), i.column(),
+                                                               QTableWidgetItem(dl.tablewidget_config1.
+                                                                                findChild(QComboBox, u'combobox_' +
+                                                                                          str(i.row())).currentText())))
+        else:
+            self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
+
+    def DialogOpenFileMatchTableWidgetItem(self, dl):
+        _path = dl.lineEdit_config1.text()
+        if _path != "":
+            _currentSheet = dl.combobox_config1.currentText()
+            _head = self.Ae.excelExtraction(_path, mode="header", _sheetName=_currentSheet)
+            _rowcount = dl.tablewidget_config1.rowCount()
+            for row1 in range(_rowcount):
+                for row2 in range(len(_head)):
+                    if _head[row2] == dl.tablewidget_config1.item(row1, 0).text():
+                        dl.tablewidget_config1.setItem(row1, 1, QTableWidgetItem(_head[row2]))
+        else:
+            self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)

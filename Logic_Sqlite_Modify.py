@@ -71,3 +71,6 @@ class Sqlite_Modify:
         else:
             print("error")
             return Exception
+
+    def IndividuationSqliteInsert(self):
+        pass
