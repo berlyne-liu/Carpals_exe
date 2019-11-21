@@ -62,3 +62,29 @@ class Alarm_Extraction:
             table = excelFile.sheet_by_name(_sheetName)
             e_header = table.row_values(rowx=0, start_colx=0, end_colx=None)
             return e_header
+
+    def testfunc(self, path, Colindex, _sheetName=None):
+        excelFile = xlrd.open_workbook(path)
+        table = excelFile.sheet_by_name(_sheetName)
+        _coly: list =[]
+        for n, v in enumerate(Colindex):
+            _coly.append(table.col_values(colx=v, start_rowx=0, end_rowx=3))
+        for row in range(len(_coly)):
+            if row == 0:
+                row1 = _coly[row]
+            else:
+                pass
+
+        print(_coly)
+
+
+if __name__ == '__main__':
+    path = "C:/Users/My-PC/Desktop/LTE告警汇总20191002.xlsx"
+    sheetName = "Sheet4"
+    _selectedColx = (1, 4, 6)
+    # ae = Alarm_Extraction()
+    # ae.testfunc(path, _selectedColx, _sheetName=sheetName)
+    list1 = [1, 2, 3, 4]
+    list2 = ["z", "x", "c", "v"]
+    list3 = list(zip(list1, list2))
+    print(list3)
