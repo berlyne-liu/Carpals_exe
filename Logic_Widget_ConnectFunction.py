@@ -218,6 +218,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             child_ui.combobox_config1.currentIndexChanged.connect(
                 lambda: self.DialogOpenFileMatchTableWidgetItem(child_ui))
             child_ui.tablewidget_config1.clicked.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
+            child_ui.pushbutton_config1.released.connect(lambda: self.DialogConfigInsertButton(child_ui))
         self.child.show()
 
     def listview_delete(self):
@@ -269,16 +270,16 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                 if i.column() == 1:
                     comBox = QComboBox(dl.tablewidget_config1)
                     comBox.setObjectName(u'combobox_' + str(i.row()))
-                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).\
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())). \
                         setStyleSheet('QComboBox{''margin:3px}')
                     dl.tablewidget_config1.setCellWidget(i.row(), i.column(), dl.tablewidget_config1.
                                                          findChild(QComboBox, u'combobox_' + str(i.row())))
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).clear()
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).addItems(_head)
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).\
-                        setCurrentText(dl.tablewidget_config1.
-                                       item(i.row(), i.column()).text())
-                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).currentIndexChanged.connect(
+                        setCurrentText(dl.tablewidget_config1.item(i.row(), i.column()).text())
+                    dl.tablewidget_config1.findChild(QComboBox,
+                                                     u'combobox_' + str(i.row())).currentIndexChanged.connect(
                         lambda: dl.tablewidget_config1.setItem(i.row(), i.column(),
                                                                QTableWidgetItem(dl.tablewidget_config1.
                                                                                 findChild(QComboBox, u'combobox_' +
@@ -296,5 +297,18 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                 for row2 in range(len(_head)):
                     if _head[row2] == dl.tablewidget_config1.item(row1, 0).text():
                         dl.tablewidget_config1.setItem(row1, 1, QTableWidgetItem(_head[row2]))
+                    else:
+                        dl.tablewidget_config1.setItem(row1, 1, QTableWidgetItem(""))
+        else:
+            self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
+
+    def DialogConfigInsertButton(self, dl):
+        _path = dl.lineEdit_config1.text()
+        _rowCount = dl.tablewidget_config1.rowCount()
+        _head: list = []
+        if _path != "":
+            for n in range(_rowCount):
+                _head.append(dl.tablewidget_config1.item(n, 1).text())
+            print(_head)
         else:
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
