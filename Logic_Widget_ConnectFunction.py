@@ -276,7 +276,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                                                          findChild(QComboBox, u'combobox_' + str(i.row())))
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).clear()
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).addItems(_head)
-                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).\
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())). \
                         setCurrentText(dl.tablewidget_config1.item(i.row(), i.column()).text())
                     dl.tablewidget_config1.findChild(QComboBox,
                                                      u'combobox_' + str(i.row())).currentIndexChanged.connect(
@@ -303,12 +303,21 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
 
     def DialogConfigInsertButton(self, dl):
+        dicTableName = {1: "Config_AlarmList",
+                        2: "Config_SceneList",
+                        3: "Config_CellsList"}
         _path = dl.lineEdit_config1.text()
+        _SheetName = dl.combobox_config1.currentText()
         _rowCount = dl.tablewidget_config1.rowCount()
+        _tableName = self.buttonGroup_as1.checkedId()
+        _ColList: list = []
         _head: list = []
         if _path != "":
             for n in range(_rowCount):
-                _head.append(dl.tablewidget_config1.item(n, 1).text())
+                _head.append(dl.tablewidget_config1.item(n, 0).text())
+                _ColList.append(dl.tablewidget_config1.item(n, 1).text())
             print(_head)
         else:
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
+        DataList = self.Ae.PersonalizedFileImport(_path, _ColList, _sheetName=_SheetName)
+        self.sm.sqlite_insert(_head, DataList, table=dicTableName[_tableName])

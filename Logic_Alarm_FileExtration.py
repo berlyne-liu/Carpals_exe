@@ -63,29 +63,19 @@ class Alarm_Extraction:
             e_header = table.row_values(rowx=0, start_colx=0, end_colx=None)
             return e_header
 
-    def PersonalizedFileImport(self, path, ColList, _sheetName=None):
+    def PersonalizedFileImport(self, Filepath, ColList, _sheetName=None):
         _header = []
         _Coly = []
         ColIndex = []
-        excelFile = xlrd.open_workbook(path)
+        excelFile = xlrd.open_workbook(Filepath)
         table = excelFile.sheet_by_name(_sheetName)
         _header = table.row_values(rowx=0, start_colx=0, end_colx=None)
+        print(ColList)
         for k, v in enumerate(ColList):
             ColIndex.append(_header.index(v))
+        print(ColIndex)
         for n, v in enumerate(tuple(ColIndex)):
-            _Coly.append(table.col_values(colx=v, start_rowx=0, end_rowx=8))
+            _Coly.append(table.col_values(colx=v, start_rowx=0, end_rowx=None))
         _data = list(map(list, (zip(*_Coly))))
         return _data  # list type
 
-
-if __name__ == '__main__':
-    path = "C:/Users/My-PC/Desktop/LTE告警汇总20191002.xlsx"
-    path2 = "C:/Users/高敏沂/Desktop/LTE告警汇总20191022.xlsx"
-    path3 = "F:/PycharmProjects/Carpals/告警设置.xlsx"
-    sheetName = "标准告警码"
-    _selectedColx = (1, 4, 6)
-    ae = Alarm_Extraction()
-    # ae.testfunc(path2, _selectedColx, _sheetName=sheetName)
-    list1 = [[1, 2, 3, 4], ["z", "x", "c", "v"], [12, 23, 34, ""], [55, 66, 77, 00], ["1", "2", "1", 45]]
-    Collist = ["备注1", "全量告警", "备注3"]
-    # print(ae.testfunc(path3, Collist, _sheetName=sheetName))

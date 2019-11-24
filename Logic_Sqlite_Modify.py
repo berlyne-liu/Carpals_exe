@@ -33,6 +33,7 @@ class Sqlite_Modify:
                     query_i = """insert into """ + kwargs[
                         'table'] + """ (""" + str_head + """) values (""" + str_sql + """)"""
                     self.cur.execute(query_i)
+                    # print(query_i)
                 except Exception as e:
                     err = ("第%s行出现异常：" + str(e) + "\n插入语句为：\n" + str(rows))
                     return
@@ -72,5 +73,4 @@ class Sqlite_Modify:
             print("error")
             return Exception
 
-    def IndividuationSqliteInsert(self):
-        pass
+
