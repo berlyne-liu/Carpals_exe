@@ -70,10 +70,10 @@ class Alarm_Extraction:
         excelFile = xlrd.open_workbook(Filepath)
         table = excelFile.sheet_by_name(_sheetName)
         _header = table.row_values(rowx=0, start_colx=0, end_colx=None)
-        print(ColList)
+        # print(ColList)
         for k, v in enumerate(ColList):
             ColIndex.append(_header.index(v))
-        print(ColIndex)
+        # print(ColIndex)
         for n, v in enumerate(tuple(ColIndex)):
             _Coly.append(table.col_values(colx=v, start_rowx=0, end_rowx=None))
         _data = list(map(list, (zip(*_Coly))))

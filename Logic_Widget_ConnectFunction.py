@@ -205,21 +205,22 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         book.save("./Result/告警表.xls")
 
     def Dialog_exec(self, p_int):
-        self.child = QDialog()
-        child_ui = Ui_DialogFrame()
-        if p_int == 0:
-            child_ui.DialogAlarmUpdate_setupUi(self.child)
-        elif p_int == 1:
-            child_ui.DialogAlarmConfig_setupUi(self.child)
-            self.DialogTableWidgetAddItems(child_ui)
-            child_ui.toolButton_config1.released.connect(
-                lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1, child_ui))
-            # child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
-            child_ui.combobox_config1.currentIndexChanged.connect(
-                lambda: self.DialogOpenFileMatchTableWidgetItem(child_ui))
-            child_ui.tablewidget_config1.clicked.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
-            child_ui.pushbutton_config1.released.connect(lambda: self.DialogConfigInsertButton(child_ui))
-        self.child.show()
+        if self.buttonGroup_as1.checkedId() != -1:
+            self.child = QDialog()
+            child_ui = Ui_DialogFrame()
+            if p_int == 0:
+                child_ui.DialogAlarmUpdate_setupUi(self.child)
+            elif p_int == 1:
+                child_ui.DialogAlarmConfig_setupUi(self.child)
+                self.DialogTableWidgetAddItems(child_ui)
+                child_ui.toolButton_config1.released.connect(lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1, child_ui))
+                child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogOpenFileMatchTableWidgetItem(child_ui))
+                child_ui.tablewidget_config1.clicked.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
+                child_ui.pushbutton_config1.released.connect(lambda: self.DialogConfigInsertButton(child_ui))
+            self.child.show()
+        else:
+            self.QMessageBoxShow("警告", "请点击要导入的文件配置类型。", 1)
+
 
     def listview_delete(self):
         _Currenrow = self.listView_a1.currentIndex().row()
@@ -244,8 +245,6 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
 
     def DialogTableWidgetAddItems(self, dl):
         _id = self.buttonGroup_as1.checkedId()
-        # comBox = QtWidgets.QComboBox()
-        # comBox.setStyleSheet('QComboBox{margin:3px}')
         dicAlaConfig = {1: ["告警标题", "告警解析", "备注1", "备注2", "备注3"],
                         2: ["小区", "覆盖场景"],
                         3: ["ERBS", "ERBS中文名", "区域", "CELL", "小区中文名", "ABC网格", "综合网格35", "责任田125"],
@@ -259,11 +258,11 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
 
     def DialogTableWidgetAddCombobox(self, dl):
         _path = dl.lineEdit_config1.text()
+        _selectRow = dl.tablewidget_config1.selectionModel().selection().indexes()
         if _path != "":
             _currentSheet = dl.combobox_config1.currentText()
             _head = self.Ae.excelExtraction(_path, mode="header", _sheetName=_currentSheet)
             _rowCount = dl.tablewidget_config1.rowCount()
-            _selectRow = dl.tablewidget_config1.selectionModel().selection().indexes()
             for n in range(_rowCount):
                 dl.tablewidget_config1.removeCellWidget(n, 1)
             for i in _selectRow:
@@ -276,6 +275,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                                                          findChild(QComboBox, u'combobox_' + str(i.row())))
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).clear()
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).addItems(_head)
+                    dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())).setCurrentIndex(-1)
                     dl.tablewidget_config1.findChild(QComboBox, u'combobox_' + str(i.row())). \
                         setCurrentText(dl.tablewidget_config1.item(i.row(), i.column()).text())
                     dl.tablewidget_config1.findChild(QComboBox,
@@ -297,8 +297,9 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                 for row2 in range(len(_head)):
                     if _head[row2] == dl.tablewidget_config1.item(row1, 0).text():
                         dl.tablewidget_config1.setItem(row1, 1, QTableWidgetItem(_head[row2]))
+                        break
                     else:
-                        dl.tablewidget_config1.setItem(row1, 1, QTableWidgetItem(""))
+                        dl.tablewidget_config1.setItem(row1, 1, QTableWidgetItem("无对应对字段，请选择！"))
         else:
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
 
@@ -316,8 +317,8 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             for n in range(_rowCount):
                 _head.append(dl.tablewidget_config1.item(n, 0).text())
                 _ColList.append(dl.tablewidget_config1.item(n, 1).text())
-            print(_head)
         else:
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
         DataList = self.Ae.PersonalizedFileImport(_path, _ColList, _sheetName=_SheetName)
+        self.sm.sqlite_query(operation="delete", configure=dicTableName[_tableName])
         self.sm.sqlite_insert(_head, DataList, table=dicTableName[_tableName])

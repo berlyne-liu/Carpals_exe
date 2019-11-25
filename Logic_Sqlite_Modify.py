@@ -57,8 +57,18 @@ class Sqlite_Modify:
                 self.connect.commit()
                 self.cur.execute("vacuum")
                 # print(result)
-            elif configure == "Carpals":
-                pass
+            elif configure == "Config_AlarmList":
+                self.cur.execute("delete from Config_AlarmList")
+                self.connect.commit()
+                self.cur.execute("vacuum")
+            elif configure == "Config_CellsList":
+                self.cur.execute("delete from Config_CellsList")
+                self.connect.commit()
+                self.cur.execute("vacuum")
+            elif configure == "Config_SceneList":
+                self.cur.execute("delete from Config_SceneList")
+                self.connect.commit()
+                self.cur.execute("vacuum")
         elif operation == "update":
             if configure == "Alarm":
                 pass

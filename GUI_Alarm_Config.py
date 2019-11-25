@@ -53,6 +53,10 @@ class Ui_AlarmConfig(QMainWindow, Ui_MainWindow):
         self.frame_as1.setFrameShadow(QtWidgets.QFrame.Raised)
         self.RadioButton_as4.setEnabled(False)
 
+        # self.pushbutton_as1.setEnabled(0)
+        # self.pushbutton_as2.setEnabled(0)
+        # self.pushbutton_as3.setEnabled(0)
+
         _translate = QtCore.QCoreApplication.translate
         self.pushbutton_as1.setText(_translate("MainWindow", "导入"))
         self.pushbutton_as2.setText(_translate("MainWindow", "呈现"))
