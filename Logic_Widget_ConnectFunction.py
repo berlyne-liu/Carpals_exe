@@ -110,7 +110,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         pos = self.listView_a1.indexAt(point).column()  # 返回鼠标点击的位置的数据行，-1表示空白行
         if pos > -1:
             popMenu.addAction("修改", lambda: self.Dialog_exec(0))
-            popMenu.addAction("删除", lambda: self.listview_delete(point))
+            popMenu.addAction("删除", lambda: self.listview_delete())
             # print(QCursor.pos())
             popMenu.exec_(QCursor.pos())
         else:

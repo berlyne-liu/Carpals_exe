@@ -54,6 +54,7 @@ class Sqlite_Modify:
             if configure == "Alarm":
                 self.cur.execute("delete from Alarm_State")
                 self.cur.execute("delete from Alarm_Cause")
+                self.cur.execute("delete from Alarm_syncStatus")
                 self.connect.commit()
                 self.cur.execute("vacuum")
                 # print(result)
