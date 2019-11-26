@@ -38,8 +38,8 @@ class Ui_alarm(QMainWindow, Ui_MainWindow):
         self.pushButton_a4.setGeometry(QtCore.QRect(590, 140, 100, 30))
         self.comboBox_a1.setGeometry(QtCore.QRect(535, 20, 120, 30))
         self.listView_a1.setGeometry(QtCore.QRect(700, 20, 290, 160))
-        self.tableView_a1.setGeometry(QtCore.QRect(10, 200, 980, 350))
-        self.tableView_a2.setGeometry(QtCore.QRect(10, 70, 420, 70))
+        self.tableView_a1.setGeometry(QtCore.QRect(10, 200, 980, 340))
+        self.tableView_a2.setGeometry(QtCore.QRect(10, 70, 420, 100))
 
         self.frame_a.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_a.setFrameShadow(QtWidgets.QFrame.Raised)

@@ -29,6 +29,7 @@ class Ui_MainWindow(object):
         self.menu2_1 = QtWidgets.QMenu(self.menu_2)
         self.menu_3 = QtWidgets.QMenu(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.progressbar_1 = QtWidgets.QProgressBar(MainWindow)
         MainWindow.setCentralWidget(self.centralwidget)
         MainWindow.setMenuBar(self.menubar)
         MainWindow.setStatusBar(self.statusbar)
@@ -41,14 +42,18 @@ class Ui_MainWindow(object):
         self.action_6 = QtWidgets.QAction(MainWindow)
 
         MainWindow.resize(1000, 600)
+        # self.statusbar.setGeometry(QtCore.QRect(0, 550, 1000, 600))
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 70))
         self.menu.setGeometry(QtCore.QRect(256, 129, 120, 70))
+        self.progressbar_1.setGeometry(0, 0, 100, 10)
 
         MainWindow.setAcceptDrops(True)
         MainWindow.setAnimated(True)
         MainWindow.setDockNestingEnabled(False)
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
         self.menubar.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
+        self.statusbar.addPermanentWidget(self.progressbar_1)
+        # self.statusbar.showMessage("test", 0)
 
         self.menu.addAction(self.action)
         self.menu.addAction(self.action_2)
@@ -64,6 +69,7 @@ class Ui_MainWindow(object):
         self.menubar.setEnabled(True)
         self.menubar.setTabletTracking(False)
         self.menubar.setDefaultUp(False)
+        # MainWindow.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         _translate = QtCore.QCoreApplication.translate

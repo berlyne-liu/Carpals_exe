@@ -38,6 +38,7 @@ class Ui_DialogFrame(QMainWindow, Ui_MainWindow):
         self.combobox_config1= QtWidgets.QComboBox(self.frame_config)
         self.tablewidget_config1 = QtWidgets.QTableWidget(self.frame_config)
         self.pushbutton_config1 = QtWidgets.QPushButton(self.frame_config)
+        self.progressbar_config1 = QtWidgets.QPushButton(self.frame_config)
 
         self.frame_config.setGeometry(QtCore.QRect(0, 0, 600, 400))
         self.lable_config1.setGeometry(QtCore.QRect(10, 10, 100, 30))
@@ -47,10 +48,10 @@ class Ui_DialogFrame(QMainWindow, Ui_MainWindow):
         self.combobox_config1.setGeometry(QtCore.QRect(120, 50, 150, 30))
         self.tablewidget_config1.setGeometry(QtCore.QRect(10, 90, 580, 230))
         self.pushbutton_config1.setGeometry(QtCore.QRect(500, 340, 90, 40))
+        self.progressbar_config1.setGeometry(QtCore.QRect(50, 360, 200, 20))
 
         Dialog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
         Dialog.setWindowModality(Qt.ApplicationModal)
-        QtCore.QMetaObject.connectSlotsByName(self.frame_config)
 
         self.tablewidget_config1.setColumnCount(2)
         self.tablewidget_config1.setHorizontalHeaderLabels(["标准列名", "导入列名"])

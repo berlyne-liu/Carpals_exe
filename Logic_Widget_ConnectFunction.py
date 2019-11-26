@@ -3,7 +3,7 @@
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QCursor
 from PyQt5.QtWidgets import QMessageBox, QTableView, QFileDialog, QHeaderView, QDialog, QMenu, QTableWidgetItem, \
     QComboBox
-from PyQt5.QtCore import QStringListModel
+from PyQt5.QtCore import QStringListModel, QBasicTimer
 import os
 import sqlite3
 from xlwt import Workbook
@@ -25,7 +25,8 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         self.connect = sqlite3.connect('./Carpals.db')
         self.sm = Sqlite_Modify(self.connect)
         self.Ae = Alarm_Extraction()
-        # self.Path4 = "./Script/check_01.sql"
+        self.timer = QBasicTimer()
+        self.step = 0
         self.add_list = []
         self.dic_AlarmFile = {}
 
@@ -126,7 +127,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             return _choose
 
     def Alarm_Generated(self):
-        # Ae = Alarm_Extraction()
+        self.ProgressBaronStart(10, "导入告警中.....")
         for (path, table) in self.dic_AlarmFile.items():
             filetype = os.path.splitext(path)[-1]
             if filetype.lower() == ".csv":
@@ -141,14 +142,19 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             self.sm.sqlite_insert(hea, cont, table=table)
         self.Ontime_Query()
         Alarm_result = self.sm.sqlite_query(path="./Script/Alarm_sql.sql")
+        self.ProgressBaronStart(90, "导入告警中.....")
         self.table_view(self.tableView_a1, Alarm_result)
+        self.ProgressBaronStart(100, "告警导入成功")
         self.dic_AlarmFile.clear()
 
     def Ontime_Query(self):
         str_query = "select  'Alarm_Cause(告警信息)' as '数据表',count(*) as '实时数据量'," \
                     "datetime('now','localtime') as '查询时间' from Alarm_Cause union " \
                     "select  'Alarm_State(小区状态)' as '数据表',count(*) as '实时数据量'," \
-                    "datetime('now','localtime') as '查询时间' from Alarm_State"
+                    "datetime('now','localtime') as '查询时间' from Alarm_State union " \
+                    "select 'Alarm_syncStatus(小区脱管)' as '数据表',count(*) as '实时数据量'," \
+                    "datetime('now','localtime') as '查询时间' from Alarm_syncStatus" \
+
         Query_result = self.sm.sqlite_query(operation="query", query_Str=str_query)
         self.table_view(self.tableView_a2, Query_result)
 
@@ -194,15 +200,19 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
 
     def Alarm_Export(self):
         Alarm_result = self.sm.sqlite_query("./Script/Alarm_sql.sql")
+        self.ProgressBaronStart(10, "告警表导出中。。。")
         h = [data[0] for data in self.sm.cur.description]
         book = Workbook()
         sheet = book.add_sheet("告警表")
+        self.ProgressBaronStart(50, "已创建文件。。。")
         for rowx, head in enumerate(h):
             sheet.write(0, rowx, head)
         for rowy, row in enumerate(Alarm_result):
             for colx, text in enumerate(row):
                 sheet.write(rowy + 1, colx, text)
+        self.ProgressBaronStart(80, "数据导入中。。。")
         book.save("./Result/告警表.xls")
+        self.ProgressBaronStart(80, "导出成功，告警表已保存/Result文件夹中")
 
     def Dialog_exec(self, p_int):
         if self.buttonGroup_as1.checkedId() != -1:
@@ -220,7 +230,6 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             self.child.show()
         else:
             self.QMessageBoxShow("警告", "请点击要导入的文件配置类型。", 1)
-
 
     def listview_delete(self):
         _Currenrow = self.listView_a1.currentIndex().row()
@@ -322,3 +331,11 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         DataList = self.Ae.PersonalizedFileImport(_path, _ColList, _sheetName=_SheetName)
         self.sm.sqlite_query(operation="delete", configure=dicTableName[_tableName])
         self.sm.sqlite_insert(_head, DataList, table=dicTableName[_tableName])
+
+    def ProgressBaronStart(self, _step, p_str):
+        self.statusbar.showMessage(p_str)
+        v = self.progressbar_1.value()
+        if v > _step or v > 100:
+            return
+        for n in range(v, _step):
+            self.progressbar_1.setValue(n+1)
