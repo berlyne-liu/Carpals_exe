@@ -24,10 +24,10 @@ class Sqlite_Modify:
         传入需导入的数据，传入类型为列表
         """
         _head = ",".join("\"" + str(s) + "\"" for s in i_head)
-        print(_head)
+        # print(_head)
         if _head.find("EUtranCellTDDId") != -1:
             str_head = _head.replace("EUtranCellTDDId", "EUtranCellFDDId") # replace后的原字符串不变，需要赋值给str_head保存
-            print(str_head)
+            # print(str_head)
         else:
             str_head = _head
         for n, rows in enumerate(args[0]):

@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
         self.menubar.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
         self.statusbar.addPermanentWidget(self.progressbar_1)
-        # self.statusbar.showMessage("test", 0)
+        self.progressbar_1.setHidden(True)
 
         self.menu.addAction(self.action)
         self.menu.addAction(self.action_2)

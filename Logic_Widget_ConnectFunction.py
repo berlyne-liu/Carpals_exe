@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMessageBox, QTableView, QFileDialog, QHeaderView, Q
 from PyQt5.QtCore import QStringListModel, QBasicTimer
 import os
 import sqlite3
+import datetime
 from xlwt import Workbook
 from GUI_Carpals_Alarm import *
 from GUI_Alarm_Config import *
@@ -47,6 +48,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             # widget.setCurrentIndex(-1)
 
     def frame_init(self, p_int):
+        self.progressbar_1.setHidden(False)
         if p_int == 0:
             self.frame_as1.setHidden(True)
             self.frame_a.setHidden(False)
@@ -63,7 +65,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         """
         if mode == "Main":
             openfile_name = QFileDialog.getOpenFileName(self.centralwidget, '选择文件', '')
-            file_name = openfile_name[0].split("/")[-1]
+            # file_name = openfile_name[0].split("/")[-1]
             widget.setText(openfile_name[0])
         elif mode == "Dialog":
             openfile_name = QFileDialog.getOpenFileName(self.child, '选择文件', '')
@@ -127,7 +129,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             return _choose
 
     def Alarm_Generated(self):
-        self.ProgressBaronStart(10, "导入告警中.....")
+        self.progressbar_1.reset()
         for (path, table) in self.dic_AlarmFile.items():
             filetype = os.path.splitext(path)[-1]
             if filetype.lower() == ".csv":
@@ -140,6 +142,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                 self.QMessageBoxShow("文件错误提示框", "您输入的文件路径不符合规则，请输入.txt/.xlsx/无扩展名的文件", 1)
                 return
             self.sm.sqlite_insert(hea, cont, table=table)
+        self.ProgressBaronStart(10, "导入告警中.....")
         self.Ontime_Query()
         Alarm_result = self.sm.sqlite_query(path="./Script/Alarm_sql.sql")
         self.ProgressBaronStart(90, "导入告警中.....")
@@ -199,6 +202,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         self.Ontime_Query()
 
     def Alarm_Export(self):
+        self.progressbar_1.reset()
         Alarm_result = self.sm.sqlite_query("./Script/Alarm_sql.sql")
         self.ProgressBaronStart(10, "告警表导出中。。。")
         h = [data[0] for data in self.sm.cur.description]
@@ -211,8 +215,10 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             for colx, text in enumerate(row):
                 sheet.write(rowy + 1, colx, text)
         self.ProgressBaronStart(80, "数据导入中。。。")
-        book.save("./Result/告警表.xls")
-        self.ProgressBaronStart(80, "导出成功，告警表已保存/Result文件夹中")
+        _DateTime = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        book.save("./Result/告警表"+_DateTime+".xls")
+        self.ProgressBaronStart(100, "导出成功，告警表已保存/Result文件夹中")
+        os.system("explorer.exe %s" % r'.\Result')
 
     def Dialog_exec(self, p_int):
         if self.buttonGroup_as1.checkedId() != -1:
@@ -223,7 +229,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             elif p_int == 1:
                 child_ui.DialogAlarmConfig_setupUi(self.child)
                 self.DialogTableWidgetAddItems(child_ui)
-                child_ui.toolButton_config1.released.connect(lambda: self.DialogAlarmConfigClickedFunc(child_ui.lineEdit_config1, child_ui))
+                child_ui.toolButton_config1.released.connect(lambda: self.DialogAlarmConfigButtonClicked(child_ui.lineEdit_config1, child_ui))
                 child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogOpenFileMatchTableWidgetItem(child_ui))
                 child_ui.tablewidget_config1.clicked.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
                 child_ui.pushbutton_config1.released.connect(lambda: self.DialogConfigInsertButton(child_ui))
@@ -243,7 +249,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
                     break
         self.FuncListviewadditem(self.dic_AlarmFile)
 
-    def DialogAlarmConfigClickedFunc(self, A_widget, dl):
+    def DialogAlarmConfigButtonClicked(self, A_widget, dl):
         self.openfile(A_widget, mode="Dialog")
         _FilePath = A_widget.text()
         if _FilePath != "":
@@ -268,7 +274,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
     def DialogTableWidgetAddCombobox(self, dl):
         _path = dl.lineEdit_config1.text()
         _selectRow = dl.tablewidget_config1.selectionModel().selection().indexes()
-        if _path != "":
+        if _path:
             _currentSheet = dl.combobox_config1.currentText()
             _head = self.Ae.excelExtraction(_path, mode="header", _sheetName=_currentSheet)
             _rowCount = dl.tablewidget_config1.rowCount()
@@ -313,6 +319,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
 
     def DialogConfigInsertButton(self, dl):
+        dl.progressbar_config1.reset()
         dicTableName = {1: "Config_AlarmList",
                         2: "Config_SceneList",
                         3: "Config_CellsList"}
@@ -322,15 +329,20 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         _tableName = self.buttonGroup_as1.checkedId()
         _ColList: list = []
         _head: list = []
+        self.DialogProgressBar(dl, 26, "正在进行基础配置。。。")
         if _path != "":
             for n in range(_rowCount):
                 _head.append(dl.tablewidget_config1.item(n, 0).text())
                 _ColList.append(dl.tablewidget_config1.item(n, 1).text())
+            self.DialogProgressBar(dl, 55, "正在读取用户选择的信息。。。")
         else:
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
+            self.progressbar_config1.setValue(0)
         DataList = self.Ae.PersonalizedFileImport(_path, _ColList, _sheetName=_SheetName)
         self.sm.sqlite_query(operation="delete", configure=dicTableName[_tableName])
+        self.DialogProgressBar(dl, 87, "更新原数据表:"+dicTableName[_tableName]+"。。。")
         self.sm.sqlite_insert(_head, DataList, table=dicTableName[_tableName])
+        self.DialogProgressBar(dl, 100, dicTableName[_tableName]+"更新完成")
 
     def ProgressBaronStart(self, _step, p_str):
         self.statusbar.showMessage(p_str)
@@ -339,3 +351,19 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             return
         for n in range(v, _step):
             self.progressbar_1.setValue(n+1)
+
+    def DialogProgressBar(self, dl, _step, p_str):
+        dl.lable_config3.setText(p_str)
+        v = dl.progressbar_config1.value()
+        if v > _step or v > 100:
+            return
+        for n in range(v, _step):
+            dl.progressbar_config1.setValue(n+1)
+
+    def AlarmConfigTableView(self):
+        dicGroup = {1: "select * from Config_AlarmList",
+                    2: "select * from Config_SceneList",
+                    3: "select * from Config_CellsList"}
+        _selectId = self.buttonGroup_as1.checkedId()
+        Query_result = self.sm.sqlite_query(operation="query", query_Str=dicGroup[_selectId])
+        self.table_view(self.Tableview_as1, Query_result)

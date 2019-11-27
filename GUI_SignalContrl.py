@@ -28,5 +28,7 @@ class Ui_signalContrl(Widget_ConnectFunction):
         self.pushButton_a3.released.connect(self.ConnectListviewaddItem)
         self.pushButton_a4.released.connect(self.Alarm_removedata)
         self.pushbutton_as1.released.connect(lambda: self.Dialog_exec(1))
-        self.pushbutton_as2.released.connect(lambda: None)
+        self.pushbutton_as2.released.connect(self.AlarmConfigTableView)
+        self.pushbutton_as3.released.connect(lambda: self.QMessageBoxShow("这个功能用不了", "这个功能应该没什么人用了，我就懒得"
+                                                                                     "写了，有需要的手动搞个excel吧", 1))
 

@@ -20,3 +20,4 @@ if __name__ == '__main__':
         sys.exit(app.exec_())
     except Exception as e:
         ui.QMessageBoxShow("主窗口错误", str(e), 0)
+    # pyinstaller - F - w - i.\icon\title.ico BerTool.py

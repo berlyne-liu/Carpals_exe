@@ -1,19 +1,26 @@
-select tempa.ERBS,tempa.CELL,tempa.Type,tempx.state,tempy.alarmObject
+select tempa.ERBS,tempa.CELL,tempa.Type,tempa.Scene,tempx.state,tempy.alarmObject
 from
+(select * from
 (select ERBS,CELL,
 case  
 when substr(ERBS,-3,3) in ("ELH","ELW","ELR")THEN "TDD"																										 
 when substr(ERBS,-3,3) in ("EFH","EFW","EFR") THEN "FDD"
 else "TDD"
 end as "Type"
-from Configure_LTE_INFO) as tempa
+from Config_CellsList) as tempA
 left join
-(select NodeId,EUtranCellFDDId,
+(select "小区" as CELL,GROUP_CONCAT("覆盖场景") AS Scene from Config_SceneList
+group by "小区"
+) as ScenList
+ON ScenList.CELL=tempa.CELL) as tempa
+left join
+(select tempa.NodeId,tempa.EUtranCellFDDId,
 case
-when ad_state="LOCKED" THEN "闭塞"
-when ad_state="DISABLED" THEN "退服"
-else "正常"
-end as state
+WHEN (tempb.synstatus<>"DROPLINE" AND tempa.ad_state="LOCKED") THEN "闭塞"
+WHEN (tempb.synstatus<>"DROPLINE" and tempa.ad_state="DISABLED") THEN "退服"
+WHEN tempb.synstatus="DROPLINE" THEN "脱管"
+ELSE "正常"
+END AS "state"
 from
 (select NodeId,EUtranCellFDDId,
 CASE
@@ -21,12 +28,20 @@ WHEN administrativeState="LOCKED" THEN "LOCKED"
 WHEN administrativeState="UNLOCKED" THEN operationalState
 END AS ad_state
 from Alarm_State) as tempa
+left join
+(select NodeId,
+case 
+WHEN syncStatus="UNSYNCHRONIZED" THEN "DROPLINE"
+else syncStatus
+END AS synstatus
+from Alarm_syncStatus) as tempb
+ON tempb.NodeId=tempa.NodeId
 ) as tempx
 on tempx.EUtranCellFDDId = tempa.CELL
 left join
 (select Nodeid,GROUP_CONCAT(alarm," | ") as "alarmObject"
 from
-(select Nodeid,STRFTIME('%Y-%m-%d %H:%M:%S', "dateid","localtime")||"  "||c."全量告警"||"("||"Alarmobject"||")" as "alarm"
+(select Nodeid,STRFTIME('%Y-%m-%d %H:%M:%S', "dateid","localtime")||"  "||c."告警解析"||"("||"Alarmobject"||")" as "alarm"
 from
 (select * from
 (
@@ -53,9 +68,9 @@ replace("Alarming Object","EUtranCellFDD=","") as "Alarmobject"
 from Alarm_Cause
 ) as a
 LEFT JOIN
-(select "告警英文","全量告警" from Configure_Alarm_Standard) as b
-on a."Specific Problem"=b."告警英文"
-where b."告警英文" is not null
+(select "告警标题","告警解析" from Config_AlarmList) as b
+on a."Specific Problem"=b."告警标题"
+where b."告警标题" is not null
 ) as c
 ) as d
 GROUP BY Nodeid
