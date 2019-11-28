@@ -56,6 +56,10 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         elif p_int == 1:
             self.frame_as1.setHidden(False)
             self.frame_a.setHidden(True)
+        elif p_int == 2:
+            self.frame_as1.setHidden(True)
+            self.frame_a.setHidden(True)
+
 
     def openfile(self, widget, mode="Main"):
         """
@@ -244,7 +248,7 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             child_ui.pushbutton_sup1.clicked.connect(lambda: self.Dialog_exec(3))
         elif p_int == 3:
             child_ui.DialogDisplayOfficeDocument(self.child)
-            self.DialogDisplayOffice(child_ui, 'Word.Application')
+
             # child_ui.lable_sup2
         self.child.show()
 
@@ -381,12 +385,4 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         Query_result = self.sm.sqlite_query(operation="query", query_Str=dicGroup[_selectId])
         self.table_view(self.Tableview_as1, Query_result)
 
-    def DialogDisplayOffice(self, dl, app):
-        path = "./f.doc"
-        dl.axWidget_dod.clear()
-        if not dl.axWidget_dod.setControl(app):
-            return QMessageBox.critical(self, '错误', '没有安装  %s' % app)
-        dl.axWidget_dod.dynamicCall('SetVisible (bool Visible)', 'false')  # 不显示窗体
-        dl.axWidget_dod.setProperty('DisplayAlerts', False)
-        dl.axWidget_dod.setControl(path)
 

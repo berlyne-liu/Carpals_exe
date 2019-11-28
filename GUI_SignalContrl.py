@@ -18,6 +18,7 @@ class Ui_signalContrl(Widget_ConnectFunction):
     def QtWidget_Function(self):
         self.action_5.triggered.connect(lambda: self.frame_init(0))
         self.action_6.triggered.connect(lambda: self.frame_init(1))
+        self.action_7.triggered.connect(lambda: os.startfile('F:/PycharmProjects/Garpals_exe/批量工单出方案.docx'))
         self.action_8.triggered.connect(lambda: self.Dialog_exec(2))
         # toolbutton点击后（鼠标点击释放），打开文件目录
         self.toolButton_a1.released.connect(lambda: self.openfile(self.lineEdit_a1, mode="Main"))

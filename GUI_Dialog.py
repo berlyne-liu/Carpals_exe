@@ -102,18 +102,3 @@ class Ui_DialogFrame(QMainWindow, Ui_MainWindow):
         Dialog.setWindowIcon(self.icon_1)
         self.lable_sup2.setText(_translate("Dialog", "Trying。。。"))
 
-    def DialogDisplayOfficeDocument(self, Dialog):
-        Dialog.resize(600, 300)
-        # self.frame_dod = QtWidgets.QFrame(Dialog)
-        self.axWidget_dod = QAxWidget()
-
-        # self.frame_dod.setGeometry(QtCore.QRect(10, 10, 580, 280))
-        self.axWidget_dod.setGeometry(QtCore.QRect(10, 10, 580, 280))
-
-        Dialog.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
-        Dialog.setWindowModality(Qt.ApplicationModal)
-        # Dialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)  # 去除标题栏
-
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "技术文档"))
-        Dialog.setWindowIcon(self.icon_1)
