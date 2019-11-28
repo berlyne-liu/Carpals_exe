@@ -221,21 +221,32 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         os.system("explorer.exe %s" % r'.\Result')
 
     def Dialog_exec(self, p_int):
-        if self.buttonGroup_as1.checkedId() != -1:
-            self.child = QDialog()
-            child_ui = Ui_DialogFrame()
-            if p_int == 0:
-                child_ui.DialogAlarmUpdate_setupUi(self.child)
-            elif p_int == 1:
+        self.child = QDialog()
+        child_ui = Ui_DialogFrame()
+        if p_int == 0:
+            child_ui.DialogAlarmUpdate_setupUi(self.child)
+        elif p_int == 1:
+            if self.buttonGroup_as1.checkedId() != -1:
                 child_ui.DialogAlarmConfig_setupUi(self.child)
                 self.DialogTableWidgetAddItems(child_ui)
                 child_ui.toolButton_config1.released.connect(lambda: self.DialogAlarmConfigButtonClicked(child_ui.lineEdit_config1, child_ui))
                 child_ui.combobox_config1.currentIndexChanged.connect(lambda: self.DialogOpenFileMatchTableWidgetItem(child_ui))
                 child_ui.tablewidget_config1.clicked.connect(lambda: self.DialogTableWidgetAddCombobox(child_ui))
                 child_ui.pushbutton_config1.released.connect(lambda: self.DialogConfigInsertButton(child_ui))
-            self.child.show()
-        else:
-            self.QMessageBoxShow("警告", "请点击要导入的文件配置类型。", 1)
+            else:
+                self.QMessageBoxShow("警告", "请点击要导入的文件配置类型。", 1)
+                return
+        elif p_int == 2:
+            child_ui.DialogSupport_setupUi(self.child)
+            child_ui.lable_sup2.hide()
+            child_ui.pushbutton_sup1.setHidden(False)
+            child_ui.pushbutton_sup1.setText("加载完成，点击预览!!")
+            child_ui.pushbutton_sup1.clicked.connect(lambda: self.Dialog_exec(3))
+        elif p_int == 3:
+            child_ui.DialogDisplayOfficeDocument(self.child)
+            self.DialogDisplayOffice(child_ui, 'Word.Application')
+            # child_ui.lable_sup2
+        self.child.show()
 
     def listview_delete(self):
         _Currenrow = self.listView_a1.currentIndex().row()
@@ -339,7 +350,9 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
             self.QMessageBoxShow("错误", "没有选择正确的文件路径，请选择！", p_int=0)
             self.progressbar_config1.setValue(0)
         DataList = self.Ae.PersonalizedFileImport(_path, _ColList, _sheetName=_SheetName)
-        self.sm.sqlite_query(operation="delete", configure=dicTableName[_tableName])
+        result = self.QMessageBoxShow("Warnning!!", "是否先清空数据表中的旧数据后再更新导入新数据？", 2)
+        if result == QMessageBox.Yes:
+            self.sm.sqlite_query(operation="delete", configure=dicTableName[_tableName])
         self.DialogProgressBar(dl, 87, "更新原数据表:"+dicTableName[_tableName]+"。。。")
         self.sm.sqlite_insert(_head, DataList, table=dicTableName[_tableName])
         self.DialogProgressBar(dl, 100, dicTableName[_tableName]+"更新完成")
@@ -367,3 +380,13 @@ class Widget_ConnectFunction(Ui_alarm, Ui_AlarmConfig, Ui_DialogFrame):
         _selectId = self.buttonGroup_as1.checkedId()
         Query_result = self.sm.sqlite_query(operation="query", query_Str=dicGroup[_selectId])
         self.table_view(self.Tableview_as1, Query_result)
+
+    def DialogDisplayOffice(self, dl, app):
+        path = "./f.doc"
+        dl.axWidget_dod.clear()
+        if not dl.axWidget_dod.setControl(app):
+            return QMessageBox.critical(self, '错误', '没有安装  %s' % app)
+        dl.axWidget_dod.dynamicCall('SetVisible (bool Visible)', 'false')  # 不显示窗体
+        dl.axWidget_dod.setProperty('DisplayAlerts', False)
+        dl.axWidget_dod.setControl(path)
+

@@ -5,7 +5,10 @@
 # Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
+from PyQt5.QAxContainer import QAxWidget
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import QMainWindow, QDialog, QFileDialog, QHeaderView, QAbstractItemView, QTableWidget
 from GUI_Carpals_test import *
 
@@ -72,8 +75,45 @@ class Ui_DialogFrame(QMainWindow, Ui_MainWindow):
         self.toolButton_config1.setText(_translate("Dialog", "文件"))
         self.toolButton_config1.setIcon(self.icon)
 
+    def DialogSupport_setupUi(self, Dialog):
+        Dialog.resize(200, 200)
+        self.frame_sup = QtWidgets.QFrame(Dialog)
+        self.lable_sup1 = QtWidgets.QLabel(self.frame_sup)
+        self.lable_sup2 = QtWidgets.QLabel(self.frame_sup)
+        self.pushbutton_sup1 = QtWidgets.QPushButton(self.frame_sup)
 
+        self.frame_sup.setGeometry(QtCore.QRect(0, 0, 200, 200))
+        self.lable_sup1.setGeometry(QtCore.QRect(0, 0, 200, 200))
+        self.lable_sup2.setGeometry(QtCore.QRect(50, 180, 130, 20))
+        self.pushbutton_sup1.setGeometry((QtCore.QRect(40, 175, 130, 20)))
 
+        self.pushbutton_sup1.setHidden(True)
+        self.lable_sup1.setScaledContents(True)
+        self.gif = QMovie('./icon/IMG_4418.GIF')
+        self.lable_sup1.setMovie(self.gif)
+        self.gif.start()
 
+        Dialog.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
+        Dialog.setWindowModality(Qt.ApplicationModal)
+        # Dialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)  # 去除标题栏
 
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Loading。。。。"))
+        Dialog.setWindowIcon(self.icon_1)
+        self.lable_sup2.setText(_translate("Dialog", "Trying。。。"))
 
+    def DialogDisplayOfficeDocument(self, Dialog):
+        Dialog.resize(600, 300)
+        # self.frame_dod = QtWidgets.QFrame(Dialog)
+        self.axWidget_dod = QAxWidget()
+
+        # self.frame_dod.setGeometry(QtCore.QRect(10, 10, 580, 280))
+        self.axWidget_dod.setGeometry(QtCore.QRect(10, 10, 580, 280))
+
+        Dialog.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
+        Dialog.setWindowModality(Qt.ApplicationModal)
+        # Dialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)  # 去除标题栏
+
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "技术文档"))
+        Dialog.setWindowIcon(self.icon_1)

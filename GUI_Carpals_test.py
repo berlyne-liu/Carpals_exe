@@ -28,6 +28,7 @@ class Ui_MainWindow(object):
         self.menu_2 = QtWidgets.QMenu(self.menubar)
         self.menu2_1 = QtWidgets.QMenu(self.menu_2)
         self.menu_3 = QtWidgets.QMenu(self.menubar)
+        self.menu_4 = QtWidgets.QMenu(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.progressbar_1 = QtWidgets.QProgressBar(MainWindow)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -40,6 +41,8 @@ class Ui_MainWindow(object):
         self.action_4 = QtWidgets.QAction(MainWindow)
         self.action_5 = QtWidgets.QAction(MainWindow)
         self.action_6 = QtWidgets.QAction(MainWindow)
+        self.action_7 = QtWidgets.QAction(MainWindow)
+        self.action_8 = QtWidgets.QAction(MainWindow)
 
         MainWindow.resize(1000, 600)
         # self.statusbar.setGeometry(QtCore.QRect(0, 550, 1000, 600))
@@ -62,13 +65,19 @@ class Ui_MainWindow(object):
         self.menu2_1.addAction(self.action_4)
         self.menu_3.addAction(self.action_5)
         self.menu_3.addAction(self.action_6)
+        self.menu_4.addAction(self.action_7)
+        self.menu_4.addAction(self.action_8)
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menu_2.menuAction())
         self.menubar.addAction(self.menu_3.menuAction())
+        self.menubar.addAction(self.menu_4.menuAction())
 
         self.menubar.setEnabled(True)
         self.menubar.setTabletTracking(False)
         self.menubar.setDefaultUp(False)
+        self.action.setEnabled(False)
+        self.action_2.setEnabled(False)
+        self.menu_2.setEnabled(False)
         # MainWindow.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -85,15 +94,9 @@ class Ui_MainWindow(object):
         self.menu_3.setTitle(_translate("MainWindow", "告警处理"))
         self.action_5.setText(_translate("MainWindow", "LTE告警解析"))
         self.action_6.setText(_translate("MainWindow", "告警配置"))
-
-    # def Dialog_setupUi(self, QDialog):
-    #     self.Dialog = QtWidgets.QWidget(QDialog)
-    #     QDialog.resize(400, 300)
-    #     QDialog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.WindowCloseButtonHint)  # 设置窗体总显示在最上面
-    #     QtCore.QMetaObject.connectSlotsByName(QDialog)
-        # _translate = QtCore.QCoreApplication.translate
-        # QDialog.setWindowTitle(_translate("QDialog", "QDialog"))
-        # QDialog.setWindowIcon(self.icon_1)
+        self.menu_4.setTitle(_translate("MainWindow", "帮助"))
+        self.action_7.setText(_translate("MainWindow", "使用说明"))
+        self.action_8.setText(_translate("MainWindow", "技术支持"))
 
 
 

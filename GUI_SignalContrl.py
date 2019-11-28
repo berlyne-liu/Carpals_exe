@@ -18,6 +18,7 @@ class Ui_signalContrl(Widget_ConnectFunction):
     def QtWidget_Function(self):
         self.action_5.triggered.connect(lambda: self.frame_init(0))
         self.action_6.triggered.connect(lambda: self.frame_init(1))
+        self.action_8.triggered.connect(lambda: self.Dialog_exec(2))
         # toolbutton点击后（鼠标点击释放），打开文件目录
         self.toolButton_a1.released.connect(lambda: self.openfile(self.lineEdit_a1, mode="Main"))
         # Combobox 初始化：加入数据库的中的表名
@@ -31,4 +32,3 @@ class Ui_signalContrl(Widget_ConnectFunction):
         self.pushbutton_as2.released.connect(self.AlarmConfigTableView)
         self.pushbutton_as3.released.connect(lambda: self.QMessageBoxShow("这个功能用不了", "这个功能应该没什么人用了，我就懒得"
                                                                                      "写了，有需要的手动搞个excel吧", 1))
-
